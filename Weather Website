@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Weather Website</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to right, #89f7fe, #66a6ff);
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .container {
+      background: white;
+      padding: 30px 40px;
+      border-radius: 15px;
+      text-align: center;
+      width: 90%;
+      max-width: 400px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+    }
+    .search {
+      display: flex;
+      margin-bottom: 20px;
+    }
+    .search input {
+      flex: 1;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+    }
+    .search button {
+      padding: 10px 15px;
+      margin-left: 10px;
+      border: none;
+      background-color: #66a6ff;
+      color: white;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    .search button:hover {
+      background-color: #558bd0;
+    }
+    .weather {
+      display: none;
+    }
+    .weather img {
+      width: 100px;
+      margin: 10px 0;
+    }
+    .error {
+      color: red;
+      margin-top: 10px;
+      display: none;
+    }
+    .details {
+      font-size: 14px;
+      margin-top: 10px;
+      color: #555;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="search">
+      <input type="text" id="cityInput" placeholder="Enter city name..." />
+      <button onclick="getWeather()">Search</button>
+    </div>
+
+    <div class="weather" id="weather">
+      <h2 id="cityName"></h2>
+      <img id="icon" src="" alt="weather icon">
+      <h3 id="temperature"></h3>
+      <p id="description"></p>
+      <p class="details" id="moreDetails"></p>
+    </div>
+
+    <div class="error" id="error">City not found. Please try again.</div>
+  </div>
+
+  <script>
+    async function getWeather() {
+      const city = document.getElementById("cityInput").value;
+      const apiKey = "YOUR_API_KEY_HERE";
+      const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
+
+      const weatherBox = document.getElementById("weather");
+      const errorBox = document.getElementById("error");
+
+      weatherBox.style.display = "none";
+      errorBox.style.display = "none";
+
+      try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error("City not found");
+
+        const data = await response.json();
+
+        document.getElementById("cityName").textContent = data.name + ", " + data.sys.country;
+        document.getElementById("temperature").textContent = `${data.main.temp}°C`;
+        document.getElementById("description").textContent = data.weather[0].main;
+        document.getElementById("icon").src = `https://openweathermap.org/img/wn/${data.weather[0].icon}@2x.png`;
+        document.getElementById("moreDetails").textContent = `Humidity: ${data.main.humidity}% | Wind: ${data.wind.speed} m/s`;
+
+        weatherBox.style.display = "block";
+      } catch (error) {
+        errorBox.style.display = "block";
+      }
+    }
+  </script>
+</body>
+</html>
